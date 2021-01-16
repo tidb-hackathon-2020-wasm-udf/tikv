@@ -103,7 +103,8 @@ impl BatchExecutorsRunner<()> {
                     BatchStreamAggregationExecutor::check_supported(&descriptor)
                         .map_err(|e| other_err!("BatchStreamAggregationExecutor: {}", e))?;
                 }
-                ExecType::TypeLimit => {}
+                ExecType::TypeLimit| 
+                 ExecType::TypeJoin => {}
                 ExecType::TypeTopN => {
                     let descriptor = ed.get_top_n();
                     BatchTopNExecutor::check_supported(&descriptor)

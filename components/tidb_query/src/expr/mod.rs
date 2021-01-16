@@ -26,6 +26,7 @@ mod builtin_op;
 mod builtin_other;
 mod builtin_string;
 mod builtin_time;
+mod builtin_wasm;
 mod column;
 mod constant;
 mod ctx;
@@ -60,6 +61,7 @@ pub struct ScalarFunc {
     children: Vec<Expression>,
     metadata: Option<Box<dyn protobuf::Message>>,
     field_type: FieldType,
+    wasm_udf_id: u64,
 }
 
 impl Expression {
@@ -276,6 +278,7 @@ impl Expression {
                             children,
                             field_type,
                             metadata: None,
+                            wasm_udf_id: expr.get_wasm_udf_id(),
                         })
                     })
             }

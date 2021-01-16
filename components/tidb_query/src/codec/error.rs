@@ -13,6 +13,7 @@ use quick_error::quick_error;
 use regex::Error as RegexpError;
 use serde_json::error::Error as SerdeError;
 use tipb::{self, ScalarFuncSig};
+use udf::WasmError;
 
 pub const ERR_M_BIGGER_THAN_D: i32 = 1427;
 pub const ERR_UNKNOWN: i32 = 1105;
@@ -50,6 +51,10 @@ quick_error! {
         Eval(s: String, code:i32) {
             description("evaluation failed")
             display("{}", s)
+        }
+        WASM(err: WasmError) {
+            from()
+            description("wasm execution err")
         }
         Other(err: Box<dyn error::Error + Send + Sync>) {
             from()
@@ -224,6 +229,7 @@ impl ErrorCodeExt for Error {
             Error::ColumnOffset(_) => error_code::coprocessor::COLUMN_OFFSET,
             Error::UnknownSignature(_) => error_code::coprocessor::UNKNOWN_SIGNATURE,
             Error::Eval(_, _) => error_code::coprocessor::EVAL,
+            Error::WASM(_) => error_code::coprocessor::WASM,
             Error::Other(_) => error_code::UNKNOWN,
         }
     }

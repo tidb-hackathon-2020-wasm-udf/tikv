@@ -8,6 +8,7 @@ use super::{Error, Result};
 use crate::codec::mysql::Tz;
 use tipb;
 use tipb::DagRequest;
+use udf::Store;
 
 bitflags! {
     /// Please refer to SQLMode in `mysql/const.go` in repo `pingcap/parser` for details.
@@ -206,20 +207,29 @@ impl EvalWarnings {
 pub struct EvalContext {
     pub cfg: Arc<EvalConfig>,
     pub warnings: EvalWarnings,
+    pub wasm_store: Store,
 }
 
 impl Default for EvalContext {
     fn default() -> EvalContext {
         let cfg = Arc::new(EvalConfig::default());
         let warnings = cfg.new_eval_warnings();
-        EvalContext { cfg, warnings }
+        EvalContext {
+            cfg,
+            warnings,
+            wasm_store: Store::default(),
+        }
     }
 }
 
 impl EvalContext {
     pub fn new(cfg: Arc<EvalConfig>) -> EvalContext {
         let warnings = cfg.new_eval_warnings();
-        EvalContext { cfg, warnings }
+        EvalContext {
+            cfg,
+            warnings,
+            wasm_store: Store::default(),
+        }
     }
 
     pub fn handle_truncate(&mut self, is_truncated: bool) -> Result<()> {

@@ -313,7 +313,8 @@ impl ScalarFunc {
             | ScalarFuncSig::OctInt
             | ScalarFuncSig::JsonDepthSig
             | ScalarFuncSig::RandomBytes
-            | ScalarFuncSig::JsonKeysSig => (1, 1),
+            | ScalarFuncSig::JsonKeysSig
+            | ScalarFuncSig::Nbody => (1, 1),
 
             ScalarFuncSig::JsonKeys2ArgsSig | ScalarFuncSig::JsonLengthSig => (1, 2),
 
@@ -346,7 +347,8 @@ impl ScalarFunc {
             | ScalarFuncSig::DecimalAnyValue
             | ScalarFuncSig::JsonAnyValue
             | ScalarFuncSig::DurationAnyValue
-            | ScalarFuncSig::JsonObjectSig => (0, usize::MAX),
+            | ScalarFuncSig::JsonObjectSig
+            | ScalarFuncSig::WasmUdf => (0, usize::MAX),
 
             ScalarFuncSig::CoalesceDecimal
             | ScalarFuncSig::CoalesceDuration
@@ -756,6 +758,7 @@ dispatch_call! {
         InstrUtf8 => instr_utf8,
         JsonDepthSig => json_depth,
         FindInSet => find_in_set,
+        Nbody => nbody,
     }
     REAL_CALLS {
         CastIntAsReal => cast_int_as_real,

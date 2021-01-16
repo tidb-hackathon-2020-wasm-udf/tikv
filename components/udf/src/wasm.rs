@@ -3,10 +3,10 @@ use anyhow::{anyhow, bail};
 use std::collections::HashMap;
 use std::str;
 use wasmer::{imports, ExportError, Function, Instance, Module, Store, Val, ValType};
-use wasmer_runtime::{func, imports as runtime_imports, instantiate, Ctx};
+use wasmer_runtime::{func, imports as runtime_imports, instantiate, Ctx, Value};
 use wasmer_wasi::{get_wasi_version, WasiError, WasiState};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct WASM {
     name: String,
     contents: Vec<u8>,
@@ -17,17 +17,7 @@ impl WASM {
         Self { name, contents }
     }
 
-    /// Call an exported wasm func
-    pub fn call(&self, func: &str, args: &[String]) -> Result<Box<[Val]>> {
-        let store = Store::default();
-        let module = Module::new(&store, &self.contents)?;
-        let imports = imports! {};
-        let instance = Instance::new(&module, &imports)?;
-        self.invoke_function(&instance, func, args)
-    }
-
-    /// Execute a _start
-    pub fn execute(&self, args: Vec<String>) -> Result<()> {
+    pub fn execute(&self, endpoint: &str, args: Vec<String>) -> Result<Box<[Val]>> {
         let store = Store::default();
         let module = Module::new(&store, &self.contents)?;
         let import_object = {
@@ -42,22 +32,7 @@ impl WASM {
             }
         };
         let instance = Instance::new(&module, &import_object)?;
-        let start = instance.exports.get_function("_start")?;
-        let result = start.call(&[]);
-        match result {
-            Ok(_) => Ok(()),
-            Err(err) => {
-                let err = match err.downcast::<WasiError>() {
-                    Ok(WasiError::Exit(exit_code)) => {
-                        // We should exit with the provided exit code
-                        std::process::exit(exit_code as _);
-                    }
-                    Ok(err) => err.into(),
-                    Err(err) => err.into(),
-                };
-                Err(err)
-            }
-        }
+        self.invoke_function(&instance, endpoint, &args)
     }
 
     #[inline]
@@ -116,7 +91,20 @@ impl WASM {
                 )),
             })
             .collect::<Result<Vec<_>>>()?;
-        Ok(func.call(&invoke_args)?)
+        let result = func.call(&invoke_args);
+        match result {
+            Ok(v) => Ok(v),
+            Err(err) => {
+                let err = match err.downcast::<WasiError>() {
+                    Ok(WasiError::Exit(exit_code)) => {
+                        std::process::exit(exit_code as _);
+                    }
+                    Ok(err) => err.into(),
+                    Err(err) => err.into(),
+                };
+                Err(err)
+            }
+        }
     }
 
     fn try_find_function(&self, instance: &Instance, name: &str) -> Result<Function> {
@@ -197,7 +185,7 @@ mod tests {
     fn test_wasm() {
         let nbody = std::fs::read("nbody.wasm").unwrap();
         let wasm = WASM::new("nbody".to_owned(), nbody);
-        wasm.execute(vec!["5000000".to_owned()]).unwrap();
+        wasm.execute("_start", vec!["5000000".to_owned()]).unwrap();
     }
 
     #[test]

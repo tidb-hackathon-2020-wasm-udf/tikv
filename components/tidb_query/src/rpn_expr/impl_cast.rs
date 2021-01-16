@@ -348,24 +348,7 @@ fn cast_string_as_int(
                         }
                         Ok(Some(x as i64))
                     }
-                    Err(err) => match *err.kind() {
-                        IntErrorKind::Overflow | IntErrorKind::Underflow => {
-                            let err = if is_str_neg {
-                                Error::overflow("BIGINT UNSIGNED", valid_int_prefix)
-                            } else {
-                                Error::overflow("BIGINT", valid_int_prefix)
-                            };
-                            let warn_err = Error::truncated_wrong_val("INTEGER", val);
-                            ctx.handle_overflow_err(warn_err).map_err(|_| err)?;
-                            let val = if is_str_neg {
-                                std::i64::MIN
-                            } else {
-                                std::u64::MAX as i64
-                            };
-                            Ok(Some(val))
-                        }
-                        _ => Err(other_err!("parse string to int failed: {}", err)),
-                    },
+                    Err(err) => Err(other_err!("parse string to int failed: {}", err)),
                 }
             }
         }
