@@ -138,6 +138,55 @@ impl WASM {
     }
 }
 
+fn http_get(ctx: &mut Ctx, ptr: u32, len: u32) -> u32 {
+    let memory = ctx.memory(0);
+    let raw_url: Vec<_> = memory.view()[ptr as usize..(ptr + len) as usize]
+        .iter()
+        .map(|cell| cell.get())
+        .collect();
+
+    let url = str::from_utf8(&raw_url).unwrap();
+    println!("GET {}", url);
+    let res = reqwest::blocking::get(url).map_or_else(
+        |e| {
+            let mut m = HashMap::new();
+            m.insert("error".to_owned(), e.to_string());
+            serde_json::to_string(&m).unwrap()
+        },
+        |resp| resp.text().unwrap(),
+    );
+
+    let res_len = res.len();
+    for (byte, cell) in res.bytes().zip(memory.view()[0..res_len].iter()) {
+        cell.set(byte);
+    }
+    res.len() as u32
+}
+
+fn print_str(ctx: &mut Ctx, ptr: u32, len: u32) {
+    // Get a slice that maps to the memory currently used by the webassembly
+    // instance.
+    //
+    // Webassembly only supports a single memory for now,
+    // but in the near future, it'll support multiple.
+    //
+    // Therefore, we don't assume you always just want to access first
+    // memory and force you to specify the first memory.
+    let memory = ctx.memory(0);
+
+    // Get a subslice that corresponds to the memory used by the string.
+    let str_vec: Vec<_> = memory.view()[ptr as usize..(ptr + len) as usize]
+        .iter()
+        .map(|cell| cell.get())
+        .collect();
+
+    // Convert the subslice to a `&str`.
+    let string = str::from_utf8(&str_vec).unwrap();
+
+    // Print it!
+    println!("{}", string);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -146,5 +195,40 @@ mod tests {
         let nbody = std::fs::read("nbody.wasm").unwrap();
         let wasm = WASM::new("nbody".to_owned(), nbody);
         wasm.execute(vec!["5000000".to_owned()]).unwrap();
+    }
+
+    #[test]
+    fn test_http_get() {
+        let wasm = std::fs::read("http.wasm").unwrap();
+        let import_object = runtime_imports! {
+            // Define the "env" namespace that was implicitly used
+            // by our sample application.
+            "env" => {
+                // name        // the func! macro autodetects the signature
+                "http_get" => func!(http_get),
+                "print_str" => func!(print_str),
+            },
+        };
+        // Compile our webassembly into an `Instance`.
+        let mut instance = instantiate(&wasm, &import_object).unwrap();
+        let memory = instance.context_mut().memory(0);
+
+        let host_string = "https://api.github.com/";
+
+        // Write the string into the lineary memory
+        for (byte, cell) in host_string
+            .bytes()
+            .zip(memory.view()[0 as usize..(host_string.len()) as usize].iter())
+        {
+            cell.set(byte);
+        }
+
+        // Call our exported function!
+        instance
+            .call(
+                "hello_http_get",
+                &[Value::I32(0), Value::I32(host_string.len() as _)],
+            )
+            .unwrap();
     }
 }
