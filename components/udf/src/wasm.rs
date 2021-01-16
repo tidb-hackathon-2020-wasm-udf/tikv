@@ -1,6 +1,9 @@
 use crate::Result;
 use anyhow::{anyhow, bail};
+use std::collections::HashMap;
+use std::str;
 use wasmer::{imports, ExportError, Function, Instance, Module, Store, Val, ValType};
+use wasmer_runtime::{func, imports as runtime_imports, instantiate, Ctx};
 use wasmer_wasi::{get_wasi_version, WasiError, WasiState};
 
 #[derive(Clone)]
