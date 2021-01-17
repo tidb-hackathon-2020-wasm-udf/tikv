@@ -7,6 +7,8 @@
 //! TiKV Coprocessor interface. However standalone UDF functions are also exported and can be used
 //! standalone.
 
+#![feature(const_fn_fn_ptr_basics)]
+#![feature(const_mut_refs)]
 #![feature(proc_macro_hygiene)]
 #![feature(specialization)]
 #![feature(const_fn)]

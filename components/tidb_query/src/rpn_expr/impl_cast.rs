@@ -156,15 +156,6 @@ fn get_cast_fn_rpn_meta(
         (EvalType::Duration, EvalType::Decimal) => cast_any_as_decimal_fn_meta::<Duration>(),
         (EvalType::Json, EvalType::Decimal) => cast_any_as_decimal_fn_meta::<Json>(),
 
-        // any as duration
-        (EvalType::Int, EvalType::Duration) => cast_int_as_duration_fn_meta(),
-        (EvalType::Real, EvalType::Duration) => cast_real_as_duration_fn_meta(),
-        (EvalType::Bytes, EvalType::Duration) => cast_bytes_as_duration_fn_meta(),
-        (EvalType::Decimal, EvalType::Duration) => cast_decimal_as_duration_fn_meta(),
-        (EvalType::DateTime, EvalType::Duration) => cast_time_as_duration_fn_meta(),
-        (EvalType::Duration, EvalType::Duration) => cast_duration_as_duration_fn_meta(),
-        (EvalType::Json, EvalType::Duration) => cast_json_as_duration_fn_meta(),
-
         (EvalType::Int, EvalType::DateTime) => cast_int_as_time_fn_meta(),
         (EvalType::Real, EvalType::DateTime) => cast_real_as_time_fn_meta(),
         (EvalType::Bytes, EvalType::DateTime) => cast_string_as_time_fn_meta(),
@@ -881,57 +872,6 @@ fn cast_duration_as_duration(
         Some(val) => Ok(Some(val.round_frac(extra.ret_field_type.decimal() as i8)?)),
     }
 }
-
-macro_rules! cast_as_duration {
-    ($ty:ty, $as_uint_fn:ident, $extra:expr) => {
-        #[rpn_fn(capture = [ctx, extra])]
-        #[inline]
-        fn $as_uint_fn(
-            ctx: &mut EvalContext,
-            extra: &RpnFnCallExtra,
-            val: &Option<$ty>,
-        ) -> Result<Option<Duration>> {
-            match val {
-                None => Ok(None),
-                Some(val) => {
-                    let result =
-                        Duration::parse(ctx, $extra, extra.ret_field_type.get_decimal() as i8);
-                    match result {
-                        Ok(dur) => Ok(Some(dur)),
-                        Err(e) => match e.code() {
-                            ERR_DATA_OUT_OF_RANGE => {
-                                ctx.handle_overflow_err(e)?;
-                                Ok(None)
-                            }
-                            ERR_TRUNCATE_WRONG_VALUE => {
-                                ctx.handle_truncate_err(e)?;
-                                Ok(None)
-                            }
-                            _ => Err(e.into()),
-                        },
-                    }
-                }
-            }
-        }
-    };
-}
-
-cast_as_duration!(
-    Real,
-    cast_real_as_duration,
-    val.into_inner().to_string().as_bytes()
-);
-cast_as_duration!(Bytes, cast_bytes_as_duration, val);
-cast_as_duration!(
-    Decimal,
-    cast_decimal_as_duration,
-    val.to_string().as_bytes()
-);
-cast_as_duration!(
-    Json,
-    cast_json_as_duration,
-    val.as_ref().unquote()?.as_bytes()
-);
 
 #[rpn_fn(capture = [ctx, extra])]
 fn cast_int_as_time(

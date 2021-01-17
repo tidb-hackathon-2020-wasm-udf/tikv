@@ -58,7 +58,6 @@ tidb_query_codegen = {path = "../tidb_query_codegen"}
 tidb_query_datatype = {path = "../tidb_query_datatype"}
 tikv_util = {path = "../tikv_util"}
 time = "0.1"
-# tipb = { git = "https://github.com/pingcap/tipb.git", default-features = false }
 log_wrappers = {path = "../log_wrappers"}
 tipb = {git = "https://github.com/tidb-hackathon-2020-wasm-udf/tipb.git", branch = "wasm-udf-r4", default-features = false}
 twoway = "0.2.0"

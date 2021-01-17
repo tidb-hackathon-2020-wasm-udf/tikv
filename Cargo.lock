@@ -2358,7 +2358,7 @@ dependencies = [
 [[package]]
 name = "kvproto"
 version = "0.0.2"
-source = "git+https://github.com/pingcap/kvproto.git?branch=release-4.0#dfe1b7b9d0dfea83fa357ac6cb2cc6ff43599712"
+source = "git+https://github.com/pingcap/kvproto.git?branch=release-4.0#0e3ce33f29b8be60d24610eb1c4695114de367ca"
 dependencies = [
  "futures 0.1.29",
  "grpcio",
@@ -3614,7 +3614,7 @@ dependencies = [
 [[package]]
 name = "raft"
 version = "0.6.0-alpha"
-source = "git+https://github.com/pingcap/raft-rs?branch=0.6.x#eddf8e6c37558d2c94872399ad4b287e123b5e02"
+source = "git+https://github.com/pingcap/raft-rs?branch=0.6.x#b5f5830f889f31453590e85613a9bf23d0e2fea9"
 dependencies = [
  "fxhash",
  "getset",
@@ -3628,7 +3628,7 @@ dependencies = [
 [[package]]
 name = "raft-proto"
 version = "0.6.0-alpha"
-source = "git+https://github.com/pingcap/raft-rs?branch=0.6.x#eddf8e6c37558d2c94872399ad4b287e123b5e02"
+source = "git+https://github.com/pingcap/raft-rs?branch=0.6.x#b5f5830f889f31453590e85613a9bf23d0e2fea9"
 dependencies = [
  "lazy_static",
  "prost",
@@ -5000,7 +5000,7 @@ dependencies = [
  "tidb_query",
  "tikv",
  "tikv_util",
- "tipb 0.0.1 (git+https://github.com/pingcap/tipb.git)",
+ "tipb",
  "txn_types",
 ]
 
@@ -5147,7 +5147,7 @@ dependencies = [
  "tidb_query_datatype",
  "tikv",
  "tikv_util",
- "tipb 0.0.1 (git+https://github.com/pingcap/tipb.git)",
+ "tipb",
  "tipb_helper",
  "tokio 0.2.24",
  "tokio-threadpool",
@@ -5252,7 +5252,7 @@ dependencies = [
  "tidb_query_datatype",
  "tikv_util",
  "time 0.1.42",
- "tipb 0.0.1 (git+https://github.com/tidb-hackathon-2020-wasm-udf/tipb.git?branch=wasm-udf-r4)",
+ "tipb",
  "tipb_helper",
  "twoway",
  "udf",
@@ -5281,7 +5281,7 @@ dependencies = [
  "failure",
  "log_wrappers",
  "tikv_alloc",
- "tipb 0.0.1 (git+https://github.com/tidb-hackathon-2020-wasm-udf/tipb.git?branch=wasm-udf-r4)",
+ "tipb",
 ]
 
 [[package]]
@@ -5371,7 +5371,7 @@ dependencies = [
  "tikv_alloc",
  "tikv_util",
  "time 0.1.42",
- "tipb 0.0.1 (git+https://github.com/tidb-hackathon-2020-wasm-udf/tipb.git?branch=wasm-udf-r4)",
+ "tipb",
  "tokio 0.2.24",
  "tokio-core",
  "tokio-fs",
@@ -5556,18 +5556,6 @@ dependencies = [
 [[package]]
 name = "tipb"
 version = "0.0.1"
-source = "git+https://github.com/pingcap/tipb.git#bd0cb2b314a4a05b2dc0fda32b744e0ecf847cd8"
-dependencies = [
- "lazy_static",
- "prost",
- "prost-derive",
- "protobuf",
- "protobuf-build",
-]
-
-[[package]]
-name = "tipb"
-version = "0.0.1"
 source = "git+https://github.com/tidb-hackathon-2020-wasm-udf/tipb.git?branch=wasm-udf-r4#beb7bec0240ec5ca16bfb6d7b0965c5dfb83fecc"
 dependencies = [
  "lazy_static",
@@ -5583,7 +5571,7 @@ version = "0.0.1"
 dependencies = [
  "codec",
  "tidb_query_datatype",
- "tipb 0.0.1 (git+https://github.com/tidb-hackathon-2020-wasm-udf/tipb.git?branch=wasm-udf-r4)",
+ "tipb",
 ]
 
 [[package]]
