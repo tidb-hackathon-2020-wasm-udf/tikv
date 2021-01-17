@@ -463,16 +463,16 @@ impl TiKVServer {
             None
         };
 
-        let storage_read_pool_handle = if self.config.readpool.storage.use_unified_pool() {
-            unified_read_pool.as_ref().unwrap().handle()
-        } else {
+        // let storage_read_pool_handle = if self.config.readpool.storage.use_unified_pool() {
+        //     unified_read_pool.as_ref().unwrap().handle()
+        // } else {
             let storage_read_pools = ReadPool::from(storage::build_read_pool(
                 &self.config.readpool.storage,
                 pd_sender.clone(),
                 engines.engine.clone(),
             ));
-            storage_read_pools.handle()
-        };
+        let storage_read_pool_handle = storage_read_pools.handle();
+        // };
 
         let storage = create_raft_storage(
             engines.engine.clone(),
@@ -500,16 +500,16 @@ impl TiKVServer {
             .build(snap_path, Some(self.router.clone()));
 
         // Create coprocessor endpoint.
-        let cop_read_pool_handle = if self.config.readpool.coprocessor.use_unified_pool() {
-            unified_read_pool.as_ref().unwrap().handle()
-        } else {
+        // let cop_read_pool_handle = if self.config.readpool.coprocessor.use_unified_pool() {
+        //     unified_read_pool.as_ref().unwrap().handle()
+        // } else {
             let cop_read_pools = ReadPool::from(coprocessor::readpool_impl::build_read_pool(
                 &self.config.readpool.coprocessor,
                 pd_sender,
                 engines.engine.clone(),
             ));
-            cop_read_pools.handle()
-        };
+        let cop_read_pool_handle = cop_read_pools.handle();
+        // };
 
         // Create and register cdc.
         let mut cdc_worker = Box::new(tikv_util::worker::Worker::new("cdc"));
