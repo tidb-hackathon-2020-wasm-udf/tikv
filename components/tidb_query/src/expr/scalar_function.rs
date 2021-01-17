@@ -758,7 +758,6 @@ dispatch_call! {
         InstrUtf8 => instr_utf8,
         JsonDepthSig => json_depth,
         FindInSet => find_in_set,
-        Nbody => nbody,
     }
     REAL_CALLS {
         CastIntAsReal => cast_int_as_real,
@@ -812,6 +811,7 @@ dispatch_call! {
         Pow => pow,
         Cot => cot,
         Degrees => degrees,
+        Nbody => nbody,
     }
     DEC_CALLS {
         CastIntAsDecimal => cast_int_as_decimal,
