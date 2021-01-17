@@ -130,6 +130,16 @@ impl<S: Snapshot> RequestHandler for AnalyzeContext<S> {
                 builder.data.collect_storage_stats(&mut self.storage_stats);
                 res
             }
+            AnalyzeType::TypeCommonHandle => {
+                let col_req = self.req.take_col_req();
+                let storage = self.storage.take().unwrap();
+                let ranges = mem::replace(&mut self.ranges, Vec::new());
+                let mut builder = SampleBuilder::new(col_req, storage, ranges)?;
+                let res = AnalyzeContext::handle_column(&mut builder);
+                builder.data.collect_storage_stats(&mut self.storage_stats);
+                res
+                // Ok(Response::default())
+            }
         };
         match ret {
             Ok(data) => {

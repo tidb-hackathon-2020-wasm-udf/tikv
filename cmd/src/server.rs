@@ -316,8 +316,8 @@ impl TiKVServer {
 
     fn init_yatp(&self) {
         yatp::metrics::set_namespace(Some("tikv"));
-        prometheus::register(Box::new(yatp::metrics::MULTILEVEL_LEVEL0_CHANCE.clone())).unwrap();
-        prometheus::register(Box::new(yatp::metrics::MULTILEVEL_LEVEL_ELAPSED.clone())).unwrap();
+        // prometheus::register(Box::new(yatp::metrics::MULTILEVEL_LEVEL0_CHANCE.clone())).unwrap();
+        // prometheus::register(Box::new(yatp::metrics::MULTILEVEL_LEVEL_ELAPSED.clone())).unwrap();
     }
 
     fn init_encryption(&mut self) {
