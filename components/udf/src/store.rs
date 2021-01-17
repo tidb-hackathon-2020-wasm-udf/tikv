@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::{collections::HashMap, fs};
 
-const STORE_PATH: &'static str = ".wasm_store";
+const STORE_PATH: &'static str = "/Users/breezewish/Work/PingCAP/runtime-wasm/";
 
 fn wasm_path(id: u64) -> PathBuf {
     Path::new(STORE_PATH).join(format!("{}.wasm", id))
